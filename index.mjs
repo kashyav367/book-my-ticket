@@ -11,6 +11,16 @@ import pg from "pg";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
+import authRoutes from "./src/routes/auth.routes.js";
+import bookingRoutes from "./src/routes/booking.routes.js";
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+app.use("/auth", authRoutes);
+app.use("/booking", bookingRoutes);
+
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -25,21 +35,19 @@ const pool = new pg.Pool({
   port: 5433,
   user: "postgres",
   password: "postgres",
-  database: "sql_class_2_db",
+  database: "seats",
   max: 20,
   connectionTimeoutMillis: 0,
   idleTimeoutMillis: 0,
 });
 
-const app = new express();
-app.use(cors());
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 //get all seats
 app.get("/seats", async (req, res) => {
-  const result = await pool.query("select * from seats"); // equivalent to Seats.find() in mongoose
+  const result = await pool.query("select * from public.seats"); // equivalent to Seats.find() in mongoose
   res.send(result.rows);
 });
 
